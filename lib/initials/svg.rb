@@ -2,17 +2,18 @@ module Initials
   class SVG
     HUE_WHEEL = 360
 
+    DEFAULT_FONT_STYLE = "style='font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif; user-select: none;'"
+
     attr_reader :name, :colors, :limit, :shape, :size
 
-    def initialize(name, colors: 12, limit: 3, shape: :circle, size: '100%', font_size_multiplier: 1.0)
+    def initialize(name, colors: 12, limit: 3, shape: :circle, size: '100%', default_font: false)
       @name = name.to_s.strip
       @colors = colors
       @limit = limit
       @shape = shape
       @size = size
-      @font_size_multiplier = font_size_multiplier
+      @default_font = default_font
 
-      raise Initials::Error.new("Font size multiplier must be a number between 0 and 2, was: #{@font_size_multiplier}") unless valid_font_size_multiplier?
       raise Initials::Error.new("Colors must be a divider of 360 e.g. 24 but not 16.") unless valid_colors?
       raise Initials::Error.new("Size is not a positive integer.") unless valid_size?
     end
@@ -23,12 +24,12 @@ module Initials
 
     def to_s
       svg = [
-        "<svg width='#{size}' height='#{size}'>",
+        "<svg width='#{size}' height='#{size}' preserveAspectRatio='xMinYMid meet' viewBox='0 0 2000 2000'>",
           shape == :rect ?
             "<rect width='#{size}' height='#{size}' fill='#{fill}' />"
           :
             "<circle cx='50%' cy='50%' r='50%' fill='#{fill}' />",
-          "<text x='50%' y='50%' fill='white' fill-opacity='0.75' dominant-baseline='central' text-anchor='middle' style='font-size: #{font_size}px; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif; user-select: none;'>",
+          "<text x='50%' y='52%' fill='white' font-size='1300' letter-spacing='-100' fill-opacity='0.75' dominant-baseline='central' text-anchor='middle' #{DEFAULT_FONT_STYLE if @default_font}>",
             "#{initials}",
           "</text>",
         "</svg>"
@@ -52,13 +53,8 @@ module Initials
       "hsl(#{hue}, 40%, 40%)"
     end
 
-    def font_size
-      default_font_size = size/2 + size/16 - (initials.length * size/16)
-      (@font_size_multiplier * default_font_size).round
-    end
-
     def initials
-      name.split(' ')[0, limit].map { |s| s[0].capitalize }.join
+      @initials ||= name.split(' ')[0, limit].map { |s| s[0].capitalize }.join
     end
 
     private
