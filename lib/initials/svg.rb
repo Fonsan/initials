@@ -4,7 +4,7 @@ module Initials
 
     attr_reader :name, :colors, :limit, :shape, :size
 
-    def initialize(name, colors: 12, limit: 3, shape: :circle, size: 32, font_size_multiplier: 1.0)
+    def initialize(name, colors: 12, limit: 3, shape: :circle, size: '100%', font_size_multiplier: 1.0)
       @name = name.to_s.strip
       @colors = colors
       @limit = limit
@@ -25,9 +25,9 @@ module Initials
       svg = [
         "<svg width='#{size}' height='#{size}'>",
           shape == :rect ?
-            "<rect width='#{size}' height='#{size}' rx='#{size / 32}' ry='#{size / 32}' fill='#{fill}' />"
+            "<rect width='#{size}' height='#{size}' fill='#{fill}' />"
           :
-            "<circle cx='#{size / 2}' cy='#{size / 2}' r='#{size / 2}' fill='#{fill}' />",
+            "<circle cx='50%' cy='50%' r='50%' fill='#{fill}' />",
           "<text x='50%' y='50%' fill='white' fill-opacity='0.75' dominant-baseline='central' text-anchor='middle' style='font-size: #{font_size}px; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen-Sans, Ubuntu, Cantarell, \"Helvetica Neue\", sans-serif; user-select: none;'>",
             "#{initials}",
           "</text>",
